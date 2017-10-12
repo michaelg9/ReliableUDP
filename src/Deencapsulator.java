@@ -29,7 +29,7 @@ public class Deencapsulator {
 		if (this.data == null) {
 			this.data = new byte[this.encapsulatedData.length - 3];
 			for (int i = 0; i < this.data.length; i++) {
-				this.data[0] = this.encapsulatedData[i+3];
+				this.data[i] = this.encapsulatedData[i+3];
 			}
 		}
 		return data;

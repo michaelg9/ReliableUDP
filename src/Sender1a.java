@@ -8,7 +8,7 @@ public class Sender1a {
 	
 	public static void main(String[] args) {
 		if (args.length != 3) {
-			System.out.println("Usage: java Sender 1a <RemoteHost> <Port> <Filename>");
+			System.out.println("Usage: java Sender1a <RemoteHost> <RemotePort> <Filename>");
 			return;
 		}
 		try {

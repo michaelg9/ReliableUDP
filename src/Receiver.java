@@ -21,12 +21,10 @@ public class Receiver {
 			byte[] buffer = new byte[1026];
 			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 			socket.receive(packet);
-			de = new Deencapsulator(buffer);
+			de = new Deencapsulator(Arrays.copyOfRange(buffer, 0, packet.getLength()));
 			store.write(de.getData());
-			//System.out.print(".");
-			if (de.getEof() == 1) System.out.print(Arrays.toString(buffer));
+			System.out.print(".");
 		} while (de.getEof() != 1);
-		System.out.println(Arrays.toString(Arrays.copyOf(store.toByteArray(), 50)));
 		return store.toByteArray();
 	}
 	

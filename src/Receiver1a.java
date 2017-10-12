@@ -7,7 +7,7 @@ public class Receiver1a {
 	
 	public static void main(String[] args) {
 		if (args.length != 2) {
-			System.out.println("Usage: java Receiver 1a <Port> <Filename>");
+			System.out.println("Usage: java Receiver1a <LocalPort> <Filename>");
 			return;
 		}
 		
