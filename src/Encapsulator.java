@@ -9,7 +9,7 @@ public class Encapsulator {
 			throw new IllegalArgumentException("Sequence number is 2 bits long");
 		}
 		if (data.length < 0 || data.length > 1023) {
-			throw new IllegalArgumentException("Data should be between [0, 1023] bits long");
+			throw new IllegalArgumentException("Data should be between [0, 1023] bits long. Yours: "+ data.length);
 		}
 		this.seqNo = seqNo;
 		this.eof = eof;

@@ -2,7 +2,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class BinaryFileReader {
 	private File file;
@@ -14,7 +13,7 @@ public class BinaryFileReader {
 		}
 	}
 
-	public byte[] readFile() throws IOException {
+	public byte[] readAll() throws IOException {
 		byte[] payload = new byte[(int) file.length()];
 		try (FileInputStream stream = new FileInputStream(file)) {
 			stream.read(payload);
@@ -25,7 +24,7 @@ public class BinaryFileReader {
 	public byte[][] readChunks(int size) throws IOException{
 		int numberOfChunks = (int)Math.ceil((double)file.length()/size);
 		byte[][] chunks = new byte[numberOfChunks][];
-		byte[] data = this.readFile();
+		byte[] data = this.readAll();
 		for (int i = 0; i < numberOfChunks; i++) {
 			int offset = i * size;
 			int chunkLength = Math.min(size, data.length - offset);
@@ -35,5 +34,9 @@ public class BinaryFileReader {
 			}
 		}
 		return chunks;
+	}
+	
+	public long getLength() {
+		return file.length();
 	}
 }

@@ -4,18 +4,19 @@ import java.net.PortUnreachableException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-public class Sender1a {
+public class Sender1b {
 	
 	public static void main(String[] args) {
-		if (args.length != 3) {
-			System.out.println("Usage: java Sender1a <RemoteHost> <RemotePort> <Filename>");
+		if (args.length != 4) {
+			System.out.println("Usage: java Sender1b <RemoteHost> <RemotePort> <Filename> <RetryTimeout>");
 			return;
 		}
 		try {
 			int port = Integer.parseInt(args[1]);
-			NaiveClient client = new NaiveClient(args[0], port);
-			System.out.println("Client initialized!");
-			client.sendFile(args[2]);
+			int retryTimeout = Integer.parseInt(args[3]);
+			StopWaitClient sender = new StopWaitClient(args[0], port, retryTimeout);
+			System.out.println("Sender initialized!");
+			sender.sendFile(args[2]);
 		} catch (NumberFormatException e) {
 			System.err.println("Port should be a number");
 		}  catch (PortUnreachableException e) {

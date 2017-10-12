@@ -5,8 +5,8 @@ public class Deencapsulator {
 	private byte[] encapsulatedData;
 	
 	public Deencapsulator(byte[] encapsulatedData) {
-		if (encapsulatedData.length < 3) {
-			throw new IllegalArgumentException("Encapsualted data should be longer than 2 bytes");
+		if (encapsulatedData.length < 2) {
+			throw new IllegalArgumentException("Encapsulated data should be at least 2 bytes long. Yours: " + encapsulatedData.length);
 		}
 		this.encapsulatedData = encapsulatedData;
 	}
@@ -21,6 +21,7 @@ public class Deencapsulator {
 	}
 
 	public byte getEof() {
+		if (this.encapsulatedData.length <= 2 ) throw new NoSuchFieldError();
 		this.eof = this.encapsulatedData[2];
 		return eof;
 	}

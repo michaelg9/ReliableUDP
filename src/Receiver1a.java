@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.net.PortUnreachableException;
 import java.net.SocketException;
-import java.nio.file.FileAlreadyExistsException;
 
 public class Receiver1a {
 	
@@ -12,18 +11,12 @@ public class Receiver1a {
 		}
 		
 		try {
-			BinaryFileWriter out = new BinaryFileWriter(args[1]);
 			int port = Integer.parseInt(args[0]);
-			Receiver receiver = new Receiver(port);
-			System.out.println("Receiver initialized! Listening for packets");
-			byte[] data = receiver.receive();
-			System.out.println("\nGot it!! Length: " + data.length);
-			receiver.close();
-			out.write(data);
+			NaiveServer receiver = new NaiveServer(port);
+			System.out.print("Receiver initialized!");
+			receiver.receiveFile(args[1]);
 		} catch (NumberFormatException e) {
 			System.err.println("Port should be a number");
-		} catch (FileAlreadyExistsException e) {
-			System.err.println("File already exists. Can't overwrite");
 		} catch (PortUnreachableException e) {
 			System.err.println("Port "+ args[1] + " unreachable on destination host");
 		} catch (SocketException e) {
