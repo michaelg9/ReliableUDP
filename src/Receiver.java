@@ -23,7 +23,7 @@ public class Receiver {
 			socket.receive(packet);
 			de = new Deencapsulator(Arrays.copyOfRange(buffer, 0, packet.getLength()));
 			store.write(de.getData());
-			System.out.print(".");
+			System.out.println("Received "+ packet.getLength()+ "bytes");
 		} while (de.getEof() != 1);
 		return store.toByteArray();
 	}
