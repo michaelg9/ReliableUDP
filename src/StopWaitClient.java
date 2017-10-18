@@ -71,7 +71,7 @@ public class StopWaitClient {
 				//keep retransmitting until received correct ack or 10 trials 
 			} while (!received);
 		}
-		float throughput = (this.stopTime-this.startTime)/(fileReader.getLength()/1024);
+		float throughput = (float) ((this.stopTime-this.startTime)/(fileReader.getLength()/1024.0));
 		System.out.println(retransmissionCount+" "+throughput);
 		this.cleanup();
 	}
