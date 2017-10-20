@@ -12,36 +12,38 @@ import java.util.Arrays;
  */
 
 public class Receiver {
-	private DatagramSocket socket;
+    private DatagramSocket socket;
 
-	public Receiver(int port) throws SocketException {
-		this.socket = new DatagramSocket(port);
-	}
+    public Receiver(int port) throws SocketException {
+        this.socket = new DatagramSocket(port);
+    }
 
-	// extra constructor in case the programmer needs specific
-	// configurations on the socket (rdt3.0)
-	public Receiver(DatagramSocket socket) {
-		this.socket = socket;
-	}
+    // extra constructor in case the programmer needs specific
+    // configurations on the socket (rdt3.0)
+    public Receiver(DatagramSocket socket) {
+        this.socket = socket;
+    }
 
-	public DatagramPacket receiveData() throws IOException,
-			SocketTimeoutException {
-		byte[] buffer = new byte[1030];
-		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-		socket.receive(packet);
-		return packet;
-	}
+    //returns the datagram packet received
+    public DatagramPacket receiveData() throws IOException,
+            SocketTimeoutException {
+        byte[] buffer = new byte[1030];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        socket.receive(packet);
+        return packet;
+    }
 
-	public byte[] receiveACK() throws IOException, SocketTimeoutException {
-		DatagramPacket packet = this.receiveData();
-		if (packet.getLength() != 2)
-			throw new IllegalStateException(
-					"Expecting control packet but received data.");
-		return Deencapsulator.getSeqNo(Arrays.copyOfRange(packet.getData(),
-				packet.getOffset(), packet.getLength()));
-	}
+    //returns the ack number of the ACK datagram
+    public byte[] receiveACK() throws IOException, SocketTimeoutException {
+        DatagramPacket packet = this.receiveData();
+        if (packet.getLength() != 2)
+            throw new IllegalStateException(
+                    "Expecting control packet but received data.");
+        return Deencapsulator.getSeqNo(Arrays.copyOfRange(packet.getData(),
+                packet.getOffset(), packet.getLength()));
+    }
 
-	public void close() {
-		this.socket.close();
-	}
+    public void close() {
+        this.socket.close();
+    }
 }
