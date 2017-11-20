@@ -1,9 +1,18 @@
 import java.util.concurrent.TimeUnit;
 
+/*
+ * Michael Michaelides s1447836
+ * Class representing a timer in java.
+ * I'm using the System.nanoTime() method to record
+ * the amount of time the program has been running since the 
+ * timer was started. 
+ */
 
 public class Timer {
 	private Long start;
 	private int timeout;
+	//sequence number is only used in selective repeat packets.
+	//a value of -1 means it's unused
 	private int seq = -1;
 	
 	public Timer(int timeout, int seq) {
@@ -23,6 +32,7 @@ public class Timer {
 		start = null;
 	}
 	
+	//running means it is active. It can be valid or expired.
 	public boolean isRunning() {
 		return start != null;
 	}

@@ -1,6 +1,14 @@
 import java.math.BigInteger;
 import java.util.Arrays;
 
+/*
+ * Michael Michaelides s1447836
+ * Class representing a sequence number.
+ * Both integer and binary forms are supported.
+ * Doesn't handle overflows, as instructed not to do so by the
+ * professor on Piazza.
+ */
+
 public class SequenceNumber {
 	private int seq = 0;
 	

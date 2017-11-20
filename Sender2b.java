@@ -1,6 +1,11 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/*
+ * Michael Michaelides s1447836
+ * Runs a selective repeat sender
+ */
+
 public class Sender2b {
 
 	public static void main(String[] args) {

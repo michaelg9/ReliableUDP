@@ -1,6 +1,11 @@
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/*
+ * Michael Michaelides s1447836
+ * Runs a go back n sender
+ */
+
 public class Sender2a {
 
 	public static void main(String[] args) {

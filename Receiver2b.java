@@ -1,6 +1,11 @@
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 
+/*
+ * Michael Michaelides s1447836
+ * Runs a selective repeat receiver
+ */
+
 public class Receiver2b {
 
 	public static void main(String[] args) throws SocketTimeoutException, NoSuchFieldException, IOException {

@@ -1,6 +1,11 @@
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 
+/*
+ * Michael Michaelides s1447836
+ * Runs a go back n receiver
+ */
+
 public class Receiver2a {
 
 	public static void main(String[] args) throws SocketTimeoutException, NoSuchFieldException, IOException {
