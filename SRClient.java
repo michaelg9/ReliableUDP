@@ -20,7 +20,7 @@ public class SRClient extends ParallelClient {
 		assert timers.size() <= window.length;
 		while (timers.size() > 0) {
 			if (!timers.element().isRunning()) {
-				//oldest timer belongs to already reveived pkt
+				//oldest timer belongs to already received pkt
 				timers.remove();
 			}
 			else if (timers.element().isExpired()) {

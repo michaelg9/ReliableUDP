@@ -17,18 +17,19 @@ public class GBNServer {
 	
     public void receiveFile(String filepath) throws IOException, NoSuchFieldException {
         BinaryFileWriter out = new BinaryFileWriter(filepath);
-        byte eof = 0;
+        SequenceNumber eofSeq = null;
         do {
             DatagramPacket packet = this.receiver.receiveData();
             byte[] dataRcved = packet.getData();
             SequenceNumber rcvdSeq = new SequenceNumber(Deencapsulator.getSeqNo(dataRcved));
             System.out.println("rcvd ("+packet.getLength()+"): "+ rcvdSeq.toIntString());
             if (expectedSeq.equals(rcvdSeq.toBytes())) {
-            	eof = Deencapsulator.getEof(dataRcved);
+            	boolean eof = Deencapsulator.getEof(dataRcved) == 1;
+				if (eof) eofSeq = rcvdSeq;
             	System.out.println("\texpected! Acking: "+expectedSeq.toInt());
                 // received expected segment. Deliver data and send ACK with current seq number
             	byte[] payload = Deencapsulator.getData(dataRcved, packet.getLength());
-                out.writeBuffer(payload, eof==1);
+                out.writeBuffer(payload, eof);
                 this.sender.sendACK(expectedSeq.toBytes(), packet.getAddress(), packet.getPort());
                 //expect next datagram, increment seqNo
                 expectedSeq.increment();
@@ -39,7 +40,7 @@ public class GBNServer {
             }
             // if we didn't make it into any other conditionals above, then wereceived an
             // unexpected sequence number. Reject data and don't respond
-        } while (eof != 1);
+        } while (eofSeq == null || eofSeq.toInt() >= expectedSeq.toInt());
         System.out.println("Received eof!");
         this.cleanup();
     }

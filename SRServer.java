@@ -21,7 +21,7 @@ public class SRServer {
 
 	public void receiveFile(String filepath) throws IOException, NoSuchFieldException {
 		BinaryFileWriter out = new BinaryFileWriter(filepath);
-		byte eof = 0;
+		SequenceNumber eofSeq = null;
 		do {
 			DatagramPacket packet = this.receiver.receiveData();
 			byte[] dataRcved = packet.getData();
@@ -34,24 +34,25 @@ public class SRServer {
 			}
 			if (isInCurrentWindow(rcvSeq) && isFirstArrivalOf(rcvSeq)) {
 				System.out.println("\tFirst arrival! Buffering");
-				eof = Deencapsulator.getEof(dataRcved);
+				boolean eof = Deencapsulator.getEof(dataRcved) == 1;
+				if (eof) eofSeq = rcvSeq;
 				byte[] pkt = Arrays.copyOfRange(packet.getData(), packet.getOffset(), packet.getLength());
 				window[rcvSeq.toInt() % window.length] = pkt;
 				while (isInOrder()) {
-					out.writeBuffer(window[base.toInt() % window.length], 3, eof == 1);
+					out.writeBuffer(window[base.toInt() % window.length], 3, eof);
 					System.out.print("\tDelivering " + base.toInt());
 					base.increment();
 					System.out.println(". Base': " + base.toInt());
 				}
 			}
-		} while (eof != 1);
-		System.out.println("Received eof!");
+		} while (eofSeq == null || eofSeq.toInt() >= base.toInt());
+		System.out.println("EOF!");
 		this.cleanup();
 	}
 
 	private boolean isInOrder() {
 		byte[] basePkt = window[base.toInt() % window.length];
-		if (basePkt == null) return false; 
+		if (basePkt == null) return false;
 		SequenceNumber s = new SequenceNumber(Deencapsulator.getSeqNo(basePkt));
 		return s.equals(base.toBytes());
 	}
@@ -60,7 +61,6 @@ public class SRServer {
 		byte[] pkt = window[s.toInt() % window.length];
 		if (pkt == null) return true;
 		int curSeq = new SequenceNumber(Deencapsulator.getSeqNo(pkt)).toInt();
-		System.out.println(curSeq + " stored VS rcvd:"+ s.toInt());
 		assert s.toInt() >= curSeq;
 		assert (s.toInt() % window.length) == (curSeq & window.length);
 		return curSeq < s.toInt();

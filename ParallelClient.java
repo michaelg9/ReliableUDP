@@ -24,8 +24,7 @@ public abstract class ParallelClient {
 	public void sendFile(String filename) throws IOException {
 		BinaryFileReader fileReader = new BinaryFileReader(filename, chunkSize);
 		int numberOfChunks = fileReader.getNumberOfChunks();
-		int lastRetries = 0;
-		while(base <= numberOfChunks && lastRetries<windowSize+10) {
+		while(base <= numberOfChunks) {
 			if (nextSeq.toInt() < base + windowSize && nextSeq.toInt()<=numberOfChunks) {
 				byte eof = (byte) (nextSeq.toInt() == numberOfChunks ? 1 : 0);
 				byte[] payload = fileReader.readChunk();
@@ -33,7 +32,6 @@ public abstract class ParallelClient {
 			}
             receive();
             checkTimeout();
-            if (nextSeq.toInt() == numberOfChunks+1) lastRetries++;
 		}
 		System.out.println("eof");
 	}
