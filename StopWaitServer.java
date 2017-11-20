@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.PortUnreachableException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -28,7 +27,6 @@ public class StopWaitServer {
     public void receiveFile(String filepath) throws IOException, SocketTimeoutException, NoSuchFieldException {
         BinaryFileWriter out = new BinaryFileWriter(filepath);
         byte eof = 0;
-        int packetNumber = 0;
         do {
             DatagramPacket packet = this.receiver.receiveData();
             byte[] dataRcved = Arrays.copyOfRange(packet.getData(), packet.getOffset(), packet.getLength());
@@ -40,7 +38,6 @@ public class StopWaitServer {
                 this.sender.sendACK(rcvdSeq, packet.getAddress(), packet.getPort());
                 //expect next datagram, seq number alternates between 0 and 1
                 this.expectedSeq[1] = (byte) ((this.expectedSeq[1]+1) % 2);
-                packetNumber++;
             } else if (this.isRetransmission(rcvdSeq)) {
                 // received retransmitted segment. Ignore data and ACK with previous seq number
                 this.sender.sendACK(rcvdSeq, packet.getAddress(), packet.getPort());

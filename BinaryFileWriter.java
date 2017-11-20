@@ -15,8 +15,11 @@ public class BinaryFileWriter {
     }
 
     public void writeBuffer(byte[] buffer, boolean finished) throws IOException {
-        this.fis.write(buffer);
-        if (finished)
-            this.fis.close();
+    	writeBuffer(buffer, 0, finished);
+    }
+    
+    public void writeBuffer(byte[] buffer, int start, boolean finished) throws IOException {
+        this.fis.write(buffer, start, buffer.length-start);
+        if (finished) this.fis.close();
     }
 }

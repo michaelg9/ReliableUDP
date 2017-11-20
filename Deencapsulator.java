@@ -13,7 +13,7 @@ public class Deencapsulator {
         if (data.length < 2)
             throw new IllegalArgumentException(
                     "Received data length is shorter than expected");
-        return Arrays.copyOfRange(data, 0, 2);
+        return new byte[]{data[0], data[1]};
     }
 
     // retrieves eof flag from received packet. Only for data packets
@@ -28,7 +28,13 @@ public class Deencapsulator {
         if (data.length <= 2)
             throw new NoSuchFieldException("No data field");
         return Arrays.copyOfRange(data, 3, data.length);
-
+    }
+    
+    // retrieves contents from received packet. Only for data packets
+    public static byte[] getData(byte[] data, int end) throws NoSuchFieldException {
+        if (data.length <= 2)
+            throw new NoSuchFieldException("No data field");
+        return Arrays.copyOfRange(data, 3, end);
     }
 
 }

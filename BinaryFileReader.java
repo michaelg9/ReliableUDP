@@ -39,7 +39,7 @@ public class BinaryFileReader {
         }
         return chunk;
     }
-
+    
     /*
      * returns how many chunks of size chunkSize
      * (apart maybe from the last which can be less)
