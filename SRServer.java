@@ -4,7 +4,6 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.Random;
 
 /*
  * Michael Michaelides s1447836
@@ -36,13 +35,13 @@ public class SRServer {
 			DatagramPacket packet = this.receiver.receiveData();
 			byte[] dataRcved = packet.getData();
 			SequenceNumber rcvSeq = new SequenceNumber(Deencapsulator.getSeqNo(dataRcved));
-			System.out.println("rcvd (" + packet.getLength() + "): "+ rcvSeq.toIntString());
+//			System.out.println("rcvd (" + packet.getLength() + "): "+ rcvSeq.toIntString());
 			if (isInPreviousWindow(rcvSeq) || isInCurrentWindow(rcvSeq)) {
-				System.out.println("\tAcking it");
+//				System.out.println("\tAcking it");
 				this.sender.sendACK(rcvSeq.toBytes(), packet.getAddress(), packet.getPort());
 			}
 			if (isInCurrentWindow(rcvSeq) && isFirstArrivalOf(rcvSeq)) {
-				System.out.println("\tFirst arrival! Buffering");
+//				System.out.println("\tFirst arrival! Buffering");
 				boolean eof = Deencapsulator.getEof(dataRcved) == 1;
 				if (eof) eofSeq = rcvSeq;
 				// trim packet to its received length
@@ -52,14 +51,14 @@ public class SRServer {
 				while (isInOrder()) {
 					//deliver in order packets and update base
 					out.writeBuffer(window[base.toInt() % window.length], 3, eof);
-					System.out.print("\tDelivering " + base.toInt());
+//					System.out.print("\tDelivering " + base.toInt());
 					base.increment();
-					System.out.println(". Base': " + base.toInt());
+//					System.out.println(". Base': " + base.toInt());
 				}
 			}
 			//stop when last packet has arrived and has been acked
 		} while (eofSeq == null || eofSeq.toInt() >= base.toInt());
-		System.out.println("EOF!");
+//		System.out.println("EOF!");
 		this.cleanup();
 	}
 

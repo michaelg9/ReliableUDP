@@ -23,16 +23,15 @@ public class GBNClient extends ParallelClient {
 	protected boolean checkTimeout() throws IOException {
 		boolean isBaseTimedOut = false;
 		if (timer.isExpired()) {
-			System.out.println("Timeout! Resending: ");
+//			System.out.println("Timeout! Resending: ");
 			timer.start();
 			isBaseTimedOut = true;
 			// send all packets from base to nextSeq-1
 			for (int i = base; i < nextSeq.toInt() ; i++) {
 				int index = (i) % window.length;
 				window[index].rewind();
-				System.out.println("\tSeq: "+window[index].get() + " " +window[index].get());
-				window[index].rewind();
-				sendPacket(window[index]);
+//				System.out.println("\tSeq: "+window[index].get() + " " +window[index].get());
+				resendPacket(window[index]);
 			}
 		}
 		return isBaseTimedOut;
@@ -57,7 +56,7 @@ public class GBNClient extends ParallelClient {
 	protected void onCreateNewPkt(ByteBuffer buf) {
 		window[nextSeq.toInt() % window.length] = buf;
 		if (base == nextSeq.toInt()) {
-			System.out.println("Sending first of the window, start timer");
+//			System.out.println("Sending first of the window, start timer");
 			//first packet in the window sent, start timer
 	  		timer.start();
 	  	}		

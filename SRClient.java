@@ -39,10 +39,10 @@ public class SRClient extends ParallelClient {
 				Timer t = timers.remove();
 				t.start();
 				if (t.getSeq() == base) isBaseTimedOut = true;
-				System.out.println("\tTimeout for "+ t.getSeq()+". Resending...");
+//				System.out.println("\tTimeout for "+ t.getSeq()+". Resending...");
 				//put restarted timer back in queue and send again
 				timers.add(t);
-				sendPacket(window[t.getSeq() % window.length].pkt);
+				resendPacket(window[t.getSeq() % window.length].pkt);
 			} else {
 				//oldest timer still valid
 				assert timers.size() == 0 || timers.element().isRunning();
@@ -66,7 +66,7 @@ public class SRClient extends ParallelClient {
 				//acked packet, increase base
 				base++;
 				isBaseAcked = true;
-				System.out.println("Base: "+base);
+//				System.out.println("Base: "+base);
 			}
 		}
 		assert (nextSeq.toInt()==base || window[base%window.length].timer.isRunning());

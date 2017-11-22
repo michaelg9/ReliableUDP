@@ -1,10 +1,9 @@
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.StandardSocketOptions;
+//import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.Random;
 
 /*
  * Michael Michaelides s1447836
@@ -23,12 +22,14 @@ public abstract class ParallelClient {
 	// counts number of times a specific base sequence has timed out
 	// used to avoid lost last ack problem 
 	private int baseRetx = 0;
-
+    private long startTime;
+    private long stopTime;
+	
 	public ParallelClient(String remoteHost, int remotePort, int timeout, int windowSize ) throws IOException {
 		channel = DatagramChannel.open();
 		channel.configureBlocking(false);
-		channel.setOption(StandardSocketOptions.SO_SNDBUF,new Integer(windowSize * 2));
-		channel.setOption(StandardSocketOptions.SO_SNDBUF, new Integer(chunkSize));
+//		channel.setOption(StandardSocketOptions.SO_SNDBUF,new Integer(windowSize * 2));
+//		channel.setOption(StandardSocketOptions.SO_SNDBUF, new Integer(chunkSize));
 		dest = new InetSocketAddress(remoteHost, remotePort);
 		this.windowSize = windowSize;
 	}
@@ -38,6 +39,7 @@ public abstract class ParallelClient {
 		int numberOfChunks = fileReader.getNumberOfChunks();
 		// while not all are acked and the base hasn't timed out
 		// more than 30 times, keep going 
+		startTime = System.currentTimeMillis();
 		while(base <= numberOfChunks && baseRetx < 30) {
 			boolean hasMoreToSend = nextSeq.toInt()<=numberOfChunks;
 			if (nextSeq.toInt() < base + windowSize && hasMoreToSend) {
@@ -54,10 +56,12 @@ public abstract class ParallelClient {
             	// if everything has already been sent once and the
             	// same base seq no keeps timing out, increase counter
             	baseRetx++;
-            	System.out.println("BaseRetx: "+baseRetx+ " "+ isBaseTimedOut);
+//            	System.out.println("BaseRetx: "+baseRetx+ " "+ isBaseTimedOut);
             }
 		}
-		System.out.println("eof");
+		float throughput = (float) ((fileReader.getLength()/1024.0)/
+        ((this.stopTime-this.startTime)/1000.0));
+		System.out.print(throughput);
 	}
 	
 	//checks and handles time outs
@@ -73,13 +77,14 @@ public abstract class ParallelClient {
 		// investigate all acks received (2 bytes each)
 		while (bytesRcvd >= 2) {
 			int ack = new SequenceNumber(new byte[]{buf.get(), buf.get()}).toInt();
-			System.out.print("rcvd ack: "+ack);
+//			System.out.print("rcvd ack: "+ack);
 			if (ack >= base && ack < base+windowSize) {
 				// rcv ack is in current window. Accept it
-				System.out.println(". Accepted");
+//				System.out.println(". Accepted");
 				isBaseAcked = onReceiveValidAck(ack);
+				stopTime = System.currentTimeMillis();
 			} else {
-				System.out.println(". Discarded(out of window).");
+//				System.out.println(". Discarded(out of window).");
 			}
 			bytesRcvd -= 2;
 		}
@@ -95,22 +100,20 @@ public abstract class ParallelClient {
 				.put(nextSeq.toBytes()).put(eof).put(payload);
 		buf.flip();
 		onCreateNewPkt(buf);
-		System.out.println("pkt seq "+nextSeq.toInt()+" sending("+buf.capacity()+")...");
+//		System.out.println("pkt seq "+nextSeq.toInt()+" sending("+buf.capacity()+")...");
 		sendPacket(buf);
         nextSeq.increment();
         }
 	
 	//caches sent packet for retransmissions
 	protected abstract void onCreateNewPkt(ByteBuffer buf);
+	
+	protected void resendPacket(ByteBuffer buf) throws IOException {
+		buf.rewind();
+		sendPacket(buf);
+	}
 
 	protected void sendPacket(ByteBuffer buf) throws IOException {
-		//////////REMOVE
-		Random r = new Random();
-		if (r.nextInt(100) < 30) {
-			System.out.println("\tLOST");
-			return;
-		}
-		
 		assert buf.limit() > 0;
 		int bytesSend = channel.send(buf, dest);
         assert bytesSend == buf.limit(): bytesSend +" sent but had "+buf.limit();
